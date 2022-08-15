@@ -11,15 +11,17 @@ const countryInfo = document.querySelector('.country-info');
 
 searchBox.addEventListener('input', debounce(inputResult, DEBOUNCE_DELAY));
 
-function inputResult(e) {
-  const inputText = e.target.value.trim();
-
+function inputResult(event) {
+  const inputText = event.target.value.trim();
+  if (inputText === '') {
+    return (countryList.innerHTML = ''), (countryInfo.innerHTML = '');
+  }
   let promise = fetchCountries(inputText);
 
   promise.then(
     countries => {
-      clearDiv();
-
+      countryInfo.innerHTML = ' ';
+      countryList.innerHTML = ' ';
       if (countries.length === 1) {
         let html = createCountryInfo(countries);
         countryInfo.innerHTML = html;
@@ -33,17 +35,12 @@ function inputResult(e) {
       }
     },
     error => {
-      clearDiv();
-
+      countryInfo.innerHTML = ' ';
+      countryList.innerHTML = ' ';
       Notiflix.Notify.failure('Oops, there is no country with that name');
     }
   );
   return inputText;
-}
-
-function clearDiv() {
-  countryInfo.innerHTML = ' ';
-  countryList.innerHTML = ' ';
 }
 
 const createCountryInfo = data => {
