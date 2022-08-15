@@ -1,65 +1,67 @@
 import './css/styles.css';
-
 import { debounce } from 'debounce';
 import Notiflix from 'notiflix';
 import { fetchCountries } from './js/fetchCountries.js';
 
-const DEBOUNCE_DELAY = 300;
-const searchBox = document.querySelector('#search-box');
+const inputField = document.querySelector('#search-box');
 const countryList = document.querySelector('.country-list');
 const countryInfo = document.querySelector('.country-info');
+const DEBOUNCE_DELAY = 300;
+countryList.style.cssText = `list-style: none;`;
 
-searchBox.addEventListener('input', debounce(inputResult, DEBOUNCE_DELAY));
-
-function inputResult(event) {
-  const inputText = event.target.value.trim();
-
-  let promise = fetchCountries(inputText);
-
-  promise.then(
-    countries => {
-      countryInfo.innerHTML = ' ';
-      countryList.innerHTML = ' ';
-      if (countries.length === 1) {
-        let html = createCountryInfo(countries);
-        countryInfo.innerHTML = html;
-      } else if (countries.length <= 10) {
-        let htmlList = createCountryList(countries);
-        countryList.innerHTML = htmlList;
-      } else if (countries.length > 10) {
-        Notiflix.Notify.info(
-          'Too many matches found. Please enter a more specific name.'
-        );
-      }
-    },
-    error => {
-      countryInfo.innerHTML = ' ';
-      countryList.innerHTML = ' ';
-      Notiflix.Notify.failure('Oops, there is no country with that name');
+inputField.addEventListener(
+  'input',
+  debounce(() => {
+    const trimmedValue = inputField.value.trim();
+    cleanHtml();
+    if (trimmedValue !== '') {
+      fetchCountries(trimmedValue).then(country => {
+        if (country.length > 10) {
+          Notiflix.Notify.info(
+            'Too many matches found. Please enter a more specific name.'
+          );
+        } else if (country.length === 0) {
+          Notiflix.Notify.failure('Oops, there is no country with that name');
+        } else if (country.length >= 2 && country.length <= 10) {
+          renderCountryList(country);
+        } else if (country.length === 1) {
+          renderOneCountry(country);
+        }
+      });
     }
-  );
-  return inputText;
+  }, DEBOUNCE_DELAY)
+);
+///Рендеринг списка стран///
+function renderCountryList(countries) {
+  const markupHTML = countries
+    .map(country => {
+      return `<li>
+      <img src="${country.flags.svg}" alt="Flag of ${country.name.official}" width="30" hight="20">
+        <b>${country.name.official}</p>
+                </li>`;
+    })
+    .join('');
+  countryList.innerHTML = markupHTML;
+}
+///Рендеринг одной страны///
+function renderOneCountry(countries) {
+  const markupHTML = countries
+    .map(country => {
+      return `<li>
+      <img src="${country.flags.svg}" alt="flag of ${
+        country.name.official
+      }" width="30" hight="20">
+        <b>${country.name.official}</b></p>
+            <p><b>Capital</b>: ${country.capital}</p>
+            <p><b>Population</b>: ${country.population}</p>
+            <p><b>Languages</b>: ${Object.values(country.languages)} </p>
+                </li>`;
+    })
+    .join('');
+  countryList.innerHTML = markupHTML;
 }
 
-const createCountryInfo = data => {
-  return data.map(
-    ({ name, capital, population, flags, languages }) =>
-      `<h1><img src="${flags.png}" alt="${name.official}" width="40"> ${
-        name.official
-      }</h1>
-    <p>capital: ${capital}</p>
-    <p>population: ${population}</p>
-    <p>languages: ${Object.values(languages).join(', ')}</p>`
-  );
-};
-
-const createCountryList = data => {
-  return data
-    .map(
-      ({ name, flags }) =>
-        `<li><img src="${flags.png}" alt="${name.official}" width="20"> ${name.official}</li>`
-    )
-    .join('');
-};
-
-countryList.style.cssText = `list-style: none;`;
+function cleanHtml() {
+  countryList.innerHTML = '';
+  countryInfo.innerHTML = '';
+}
