@@ -13,9 +13,7 @@ searchBox.addEventListener('input', debounce(inputResult, DEBOUNCE_DELAY));
 
 function inputResult(event) {
   const inputText = event.target.value.trim();
-  if (inputText === '') {
-    return (countryList.innerHTML = ''), (countryInfo.innerHTML = '');
-  }
+
   let promise = fetchCountries(inputText);
 
   promise.then(
