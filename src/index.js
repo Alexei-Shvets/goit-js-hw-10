@@ -31,7 +31,7 @@ inputField.addEventListener(
     }
   }, DEBOUNCE_DELAY)
 );
-
+//очищаю лишки при очистке поля поиска//
 function cleanHtml() {
   countryList.innerHTML = '';
   countryInfo.innerHTML = '';
