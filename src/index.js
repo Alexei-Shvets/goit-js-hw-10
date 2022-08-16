@@ -31,6 +31,12 @@ inputField.addEventListener(
     }
   }, DEBOUNCE_DELAY)
 );
+
+function cleanHtml() {
+  countryList.innerHTML = '';
+  countryInfo.innerHTML = '';
+}
+
 ///Рендеринг списка стран///
 function renderCountryList(countries) {
   const markupHTML = countries
@@ -59,9 +65,4 @@ function renderOneCountry(countries) {
     })
     .join('');
   countryList.innerHTML = markupHTML;
-}
-
-function cleanHtml() {
-  countryList.innerHTML = '';
-  countryInfo.innerHTML = '';
 }
