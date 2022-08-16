@@ -20,10 +20,10 @@ inputField.addEventListener(
           Notiflix.Notify.info(
             'Too many matches found. Please enter a more specific name.'
           );
-        } else if (country.length === 0) {
-          Notiflix.Notify.failure('Oops, there is no country with that name');
         } else if (country.length >= 2 && country.length <= 10) {
           renderCountryList(country);
+        } else if (country.length === 0) {
+          Notiflix.Notify.failure('Oops, there is no country with that name');
         } else if (country.length === 1) {
           renderOneCountry(country);
         }
